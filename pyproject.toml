@@ -18,7 +18,7 @@ dependencies = [
     "requests==^2.25",
     "typer==^0.3.2",
     "pandas==^1.2.3"
-    "typer==^0.9.0",
+    "typer==^0.9.0"
 ]
 
 [project.optional-dependencies]
