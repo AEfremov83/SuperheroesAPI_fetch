@@ -27,7 +27,7 @@ dev = [
 ]
 
 [project.scripts]
-sample = "get_super_heroes_data:main"
+sample = "get_super_heroes_data:get_data"
 
 [options]
 package_dir = "src"
