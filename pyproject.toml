@@ -1,0 +1,40 @@
+[project]
+name = "superhero-api-fetcher"
+description = "A tool to fetch superhero gender distribution using the Superhero API. Devcase for Blueharvest"
+readme = "README.md"
+authors = [
+    { name = "Andrey Efremov", email = "andreyefremov356@gmail.com" },
+]
+version = "1.0.0"
+
+requires-python = ">=3.8"
+
+classifiers = [
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3 :: Only",
+]
+
+dependencies = [
+    "requests==^2.25",
+    "typer==^0.3.2",
+    "pandas =^1.2.3"
+    "typer==^0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==^6.2",
+]
+
+[project.scripts]
+sample = "get_super_heroes_data:main"
+
+[options]
+package_dir = "src"
+
+[options.packages.find]
+where = "src"
+
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
