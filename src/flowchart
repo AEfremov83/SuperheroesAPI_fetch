@@ -1,0 +1,74 @@
+             ┌────────────────────────────┐
+             │      Start (Typer CLI)     │
+             │  (Prompt for API token)    │
+             └────────────┬───────────────┘
+                          │
+                          ▼
+             ┌────────────────────────────┐
+             │   Build base URL using     │
+             │        token               │
+             └────────────┬───────────────┘
+                          │
+                          ▼
+             ┌────────────────────────────┐
+             │  Create requests.Session   │
+             │  for HTTP connection       │
+             │  pooling                   │
+             └────────────┬───────────────┘
+                          │
+                          ▼
+             ┌────────────────────────────┐
+             │ThreadPoolExecutor Setup    │
+             │(max_workers, e.g. 20)      │
+             │For each ID in range        │
+             └───────┬────────────────────┘
+                     │
+                     ▼
+      ┌─────────────────────────────────────┐
+      │ Submit fetch_character_data tasks     │
+      │ to ThreadPoolExecutor (many threads)  │
+      └───────┬───────────────────────────────┘
+              │
+              ▼
+ ┌─────────────────────────────────────────────┐
+ │  fetch_character_data(session, base_url, id) │
+ │                                              │
+ │  ┌───────────────────────────────────────┐   │
+ │  │  Attempt GET request (timeout=5)      │   │
+ │  │  on API endpoint for the character    │   │
+ │  └────────────┬──────────────────────────┘   │
+ │               │ If Response is 200 & valid:  │
+ │               ▼                              │
+ │          ┌──────────────┐                    │
+ │          │ Parse JSON:  │  Name & Gender     │
+ │          │  Validate    ├───(gender ≠ "-")   │
+ │          └──────┬───────┘                    │
+ │                 │  Return (name, gender)     │
+ │                 │                            │
+ │    ┌────────────┴─────────────┐              │
+ │    │ Else if not valid or     │              │
+ │    │ status != 200:           │              │
+ │    │ Log warning and retry    │              │
+ │    │ (retry up to 3 times)    │              │
+ │    └────────────┬─────────────┘              │
+ │                 │                            │
+ │       └─────────┴──────────┘                 │
+ └─────────────────────────────────────────────┘
+              │ (Each future returns result)
+              ▼
+ ┌─────────────────────────────────────────────┐
+ │  as_completed gathers all responses       │
+ │  and valid (name, gender) tuples collected  │
+ └─────────────┬───────────────────────────────┘
+               │
+               ▼
+ ┌─────────────────────────────────────────────┐
+ │   Build a pandas DataFrame from the data    │
+ │   and compute gender distribution           │
+ └─────────────┬───────────────────────────────┘
+               │
+               ▼
+ ┌─────────────────────────────────────────────┐
+ │   Output the gender distribution via Typer  │
+ │   (printed to terminal)                     │
+ └─────────────────────────────────────────────┘
